@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Affordability Calculator (20/3/8 Rule)</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    label, input { display: block; margin-bottom: 10px; }
+    .inline-note { font-size: 0.9em; color: #555; margin-top: -8px; margin-bottom: 10px; }
+    .results { margin-top: 20px; background: #f4f4f4; padding: 15px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Max Car Cost Based on Gross Income (20/3/8 Rule)</h2>
+  <h3>For Meg, by Erik</h3>
+    <h4><br></h4>
+
+  <label for="monthlyIncome">Gross Monthly Income ($):</label>
+  <input type="number" id="monthlyIncome" placeholder="e.g., 5000">
+
+  <label for="interestRate">Annual Interest Rate (%):</label>
+  <input type="number" id="interestRate" placeholder="e.g., 5">
+  <div class="inline-note">Typical APR for auto loans ranges from 4%–7%</div>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <div class="results" id="results" style="display: none;"></div>
+
+  <script>
+
+function calculate() {
+  const income = parseFloat(document.getElementById('monthlyIncome').value);
+  const annualRate = parseFloat(document.getElementById('interestRate').value);
+
+  if (isNaN(income) || income <= 0 || isNaN(annualRate) || annualRate < 0) {
+    alert('Please enter valid values for income and interest rate.');
+    return;
+  }
+
+  const maxMonthlyPayment = income * 0.08;
+  const loanTermMonths = 36;
+  const monthlyRate = annualRate / 100 / 12;
+
+  // Calculate max loan amount based on payment and interest
+  const loanAmount = maxMonthlyPayment * ((1 - Math.pow(1 + monthlyRate, -loanTermMonths)) / monthlyRate);
+
+  // Total car cost assuming 20% down (loan is 80% of cost)
+  const carPrice = loanAmount / 0.8;
+  const downPayment = carPrice * 0.20;
+  const totalLoanPayment = maxMonthlyPayment * loanTermMonths;
+
+  const resultText = `
+    <strong>Results:</strong><br><br>
+    Maximum Car Cost: <strong>$${carPrice.toFixed(2)}</strong><br>
+    Down Payment (20% of car cost): <strong>$${downPayment.toFixed(2)}</strong><br>
+    Total Loan Principal (36 months at ${annualRate.toFixed(2)}% APR): <strong>$${loanAmount.toFixed(2)}</strong><br>
+    Max Monthly Payment (8% of gross income): <strong>$${maxMonthlyPayment.toFixed(2)}</strong><br>
+    Total Loan Payment (monthly × 36): <strong>$${totalLoanPayment.toFixed(2)}</strong><br>
+    <br>
+    <br>
+
+    <em>
+    Your maximum affordable car cost is calculated using the 20/3/8 rule:
+        <br><br>
+    1) 8% of your gross monthly income is the maximum monthly car payment you should take on.
+        <br><br>
+    2) Next, calculate how large of a 36-month loan (3 years) you can afford with that monthly payment, including interest.
+        <br><br>
+    3) That loan covers 80% of the car's price.
+        <br><br>
+    4) The remaining 20% is your down payment.
+    </em>
+  `;
+
+  document.getElementById('results').innerHTML = resultText;
+  document.getElementById('results').style.display = 'block';
+}
+
+  </script>
+</body>
+</html>
